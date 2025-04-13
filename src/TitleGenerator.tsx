@@ -82,7 +82,10 @@ export default function TitleGenerator() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to generate titles");
+        const errorText = await response.text();
+        throw new Error(
+          `Failed to generate titles: ${response.status} ${response.statusText}. ${errorText}`
+        );
       }
 
       const data = await response.json();
@@ -91,8 +94,11 @@ export default function TitleGenerator() {
       console.error("Error generating titles:", error);
       toast({
         title: "Error",
-        description: "Failed to generate titles. Please try again.",
-        duration: 3000,
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate titles. Please try again.",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
